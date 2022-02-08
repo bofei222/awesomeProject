@@ -1,8 +1,11 @@
 package myslices
 
-import "fmt"
+import (
+	"fmt"
+	"testing"
+)
 
-func main() {
+func Test23(t *testing.T) {
 	s := []int{2, 3, 5, 7, 11, 13}
 	printSlice(s)
 

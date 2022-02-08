@@ -1,8 +1,11 @@
 package myslices
 
-import "fmt"
+import (
+	"fmt"
+	"testing"
+)
 
-func main() {
+func Test28(t *testing.T) {
 	pow := make([]int, 10)
 
 	for i := range pow {

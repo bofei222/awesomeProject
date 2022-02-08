@@ -3,9 +3,10 @@ package myslices
 import (
 	"fmt"
 	"strings"
+	"testing"
 )
 
-func main() {
+func Test26(t *testing.T) {
 	// 创建一个井字板（经典游戏）
 	board := [][]string{
 		[]string{"_", "_", "_"},

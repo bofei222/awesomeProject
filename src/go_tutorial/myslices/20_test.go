@@ -1,8 +1,11 @@
 package myslices
 
-import "fmt"
+import (
+	"fmt"
+	"testing"
+)
 
-func main() {
+func Test20(t *testing.T) {
 	var a [2]string
 	a[0] = "Hello"
 	a[1] = "World"

@@ -1,8 +1,11 @@
 package myslices
 
-import "fmt"
+import (
+	"fmt"
+	"testing"
+)
 
-func main() {
+func Test21(t *testing.T) {
 	names := [4]string{
 		"John",
 		"Paul",
