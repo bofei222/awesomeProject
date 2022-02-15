@@ -1,7 +1,7 @@
 package client
 
 import (
-	"awesomeProject/src/geek/ch15/series"
+	"awesomeProject/src/geek_tutorial/ch15/series"
 	cm "github.com/orcaman/concurrent-map"
 	"testing"
 )

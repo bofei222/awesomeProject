@@ -5,7 +5,7 @@ import (
 	"regexp"
 )
 
-func main() {
+func aa() {
 
 	r, _ := regexp.Compile("202108.*/*history.dat")
 

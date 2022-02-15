@@ -3,13 +3,11 @@ module awesomeProject
 go 1.16
 
 require (
-	github.com/Shopify/sarama v1.29.1
-	github.com/bsm/sarama-cluster v2.1.15+incompatible
 	github.com/fsnotify/fsnotify v1.4.9
-	github.com/golang/protobuf v1.5.2 // indirect
-	github.com/onsi/gomega v1.15.0 // indirect
-	github.com/orcaman/concurrent-map v0.0.0-20210501183033-44dafcb38ecc // indirect
-	github.com/robfig/cron/v3 v3.0.0 // indirect
-	github.com/xitongsys/parquet-go v1.6.1 // indirect
-	gopkg.in/yaml.v2 v2.4.0
+	github.com/go-sql-driver/mysql v1.5.0
+	github.com/jmoiron/sqlx v1.3.4
+	github.com/orcaman/concurrent-map v0.0.0-20210501183033-44dafcb38ecc
+	github.com/robfig/cron/v3 v3.0.0
+	github.com/xitongsys/parquet-go v1.6.1
+	golang.org/x/sys v0.0.0-20210615035016-665e8c7367d1 // indirect
 )

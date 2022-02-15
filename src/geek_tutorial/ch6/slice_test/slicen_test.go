@@ -5,6 +5,43 @@ import (
 	"testing"
 )
 
+func TestForLoopRemove(t *testing.T) {
+	//all := []int{0, 3, 2, 1, 4, 9, 6, 7, 8, 5}
+	all := []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
+	fmt.Println(all) //[0 1 2 3 4 5 6 7 8 9]
+
+	selectMap := map[int]int{
+		1: 0,
+		3: 0,
+		9: 0,
+	}
+	j := 0
+	selectSlice := make([]int, 0)
+	for _, v := range all {
+		if _, ok := selectMap[v]; !ok {
+			//all = RemoveIndex(all, i)
+			selectSlice = append(selectSlice, v)
+			j++
+		}
+	}
+	fmt.Println(selectSlice)
+
+}
+func RemoveIndex(s []int, index int) []int {
+	return append(s[:index], s[index+1:]...)
+}
+
+func TestSliceRemove(t *testing.T) {
+	year := []string{"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep",
+		"Oct", "Nov", "Dec"}
+	for i, s := range year {
+		if s == "Apr" || s == "Feb" {
+			year = append(year[:i], year[i+1:]...) // ... 将列表展开 为 元素
+		}
+	}
+	fmt.Println(year)
+}
+
 func TestSliceInit(t *testing.T) {
 
 	// 声明时 不必指定长度
@@ -15,7 +52,9 @@ func TestSliceInit(t *testing.T) {
 
 	s2 := make([]int, 3, 5)
 	t.Log(len(s2), cap(s2))
-	s2 = append(s2, 1)
+	s3 := make([]int, 0)
+	s3 = append(s3, 1)
+	t.Log(s3)
 	// 声明时 length ，最大可填充 cap
 }
 
