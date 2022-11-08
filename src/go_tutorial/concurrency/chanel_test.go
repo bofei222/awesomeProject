@@ -15,7 +15,7 @@ func sum(s []int, c chan int) {
 
 	b := <-c // 消费了 c，
 	fmt.Println("b:", b)
-	c <- 1 // 填充了c   所以返回时 c 内是1
+	c <- 1 // 填充了c   所以返回时 c 是1
 }
 
 func TestChanel(t *testing.T) {

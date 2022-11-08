@@ -7,10 +7,10 @@ import (
 )
 
 func TestT3(t *testing.T) {
-	//len := lengthOfLongestSubstring("abcabcdbb") //
-	len := lengthOfLongestSubstring("ohomm") //
+	//len := lengthOfLongestSubstring0("abcabcbb") //
+	//len := lengthOfLongestSubstring("ohomm") //
 	//len := lengthOfLongestSubstring("dvdf") //
-	//len := lengthOfLongestSubstring("pwwkew") //
+	len := lengthOfLongestSubstring0("pwwkew") //
 	fmt.Println(len)
 }
 

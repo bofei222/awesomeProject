@@ -23,9 +23,10 @@ func main() {
 	c.AddFunc("*/1 * * * * *", func() { // 可以随时添加多个定时任务
 		log.Printf("111")
 		time.Sleep(time.Second * 3)
+		log.Println("111结束")
 	})
 
-	// 不仅本任务的 下次执行会被跳过 ， 其他 任务的 也不会执行
+	//// 不仅本任务的 下次执行会被跳过 ， 其他 任务的 也不会执行
 	c.AddFunc("*/1 * * * * *", func() { // 可以随时添加多个定时任务
 		log.Printf("2222")
 	})

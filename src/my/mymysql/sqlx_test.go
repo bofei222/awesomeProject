@@ -19,7 +19,7 @@ func TestSqlx(t *testing.T) {
 	initMySQL()
 	//queryRow()
 	//queryMultiRow()
-	//insertRow()
+	insertRow()
 	//updateRow()
 	//deleteRow()
 	//insertUserDemo()
