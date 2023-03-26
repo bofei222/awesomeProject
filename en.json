@@ -1,0 +1,31 @@
+{
+  "风机正在除湿": "风机正在除湿-英语的",
+  "机舱振动超限": "机舱振动超限-英语的",
+  "eventCode21": "机舱火灾停机-英语的",
+  "安全链": "安全链-英文的",
+  "消防": "消防-英文的",
+  "message": {
+    "description": "The number of messages a person has",
+    "one": "{{.name}} has {{.Count}} message1.",
+    "other": "{{.name}} has {{.Count}} messages2."
+  },
+  "hsms01": "无法获取其他节点的信息,请检查网络以及对方节点的服务状态",
+  "hsms02": "服务器{{.host}离线",
+  "hsms03": "{{.reason}} :当前占用{{.current}} ,阈值为{{.boundary}} ",
+  "hsms04": "{{.reason}} has {{.current}} message1. {{.boundary}}",
+  "hsms05": "建议进行主备切换: 默认主机{{.otherHost}恢复工作, 本机{{.myHost}降级为备节点",
+  "hsms06": "主备切换: keepalived发起切换, {{.host}修改为{{.status}",
+  "hsms07": "建议进行主备切换: 服务器{{.host}进入维护状态,进行降级",
+  "hsms08": "建议进行主备切换:服务器{{.otherHost}维护, 本机{{.myHost}升级",
+  "hsms09": "建议进行主备切换: 服务器{{.otherHost}资源异常,本机{{.myHost}升级成主机",
+  "hsms10": "建议进行主备切换: 默认主机{{.otherHost}恢复工作, 本机{{.myHost}升级为主节点",
+  "hsms11": "建议进行主备切换:服务器{{.host}能管服务异常,进行降级",
+  "hsms12": "建议进行主备切换: 服务器{{.otherHost}能管服务异常,本机{{.myHost}升级成主机",
+  "hsms13": "网口故障: 服务器{{.host}{pubs}网段网口故障",
+  "hsms14": "该节点没有设置mysql主从备份,show slave status结果错误",
+  "hsms15": "能管服务异常",
+  "hsms16": "两个节点都是{{.status}",
+  "hsms17": "hsms与ems主备状态不一致,hsms为{{.hsmsStatus},ems为{{.emsStatus}",
+  "hsms18": "hsms与keepalived主备状态不一致,hsms为{{.hsmsStatus},keepalived为{{.keepalivedStatus}"
+}
+
