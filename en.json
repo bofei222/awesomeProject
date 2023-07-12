@@ -4,6 +4,14 @@
   "eventCode21": "机舱火灾停机-英语的",
   "安全链": "安全链-英文的",
   "消防": "消防-英文的",
+  "pointAlarm": {
+    "告警": "告警-en",
+    "提示": "提示",
+    "故障": "故障",
+    "预警": "预警",
+    "报警": "报警",
+    "一般故障": "一般故障"
+  },
   "message": {
     "description": "The number of messages a person has",
     "one": "{{.name}} has {{.Count}} message1.",

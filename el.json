@@ -1,7 +1,7 @@
 {
   "风机正在除湿": "风机正在除湿-俄语的",
   "机舱振动超限": "机舱振动超限-俄语的",
-  "messages": {
+  "message": {
     "description": "The number of messages a person has",
     "one": "Ο {{.Name}} έχει {{.Count}} μύνημα.",
     "other": "Ο {{.Name}} έχει {{.Count}} μύνηματα."

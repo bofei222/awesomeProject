@@ -1,22 +1,37 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
-	"time"
+	"github.com/nicksnyder/go-i18n/v2/i18n"
+	"golang.org/x/text/language"
 )
 
 func main() {
-	var t int64
-	t = 1684740483082
-	format := time.UnixMilli(t).Format("2006-01-02T15:04:05+08:00")
+	// 创建一个Bundle对象，用于加载本地化文件
+	bundle := i18n.NewBundle(language.Chinese)
+	bundle.RegisterUnmarshalFunc("json", json.Unmarshal)
 
-	parse, err := time.Parse(time.RFC3339, format)
-	if err != nil {
-		fmt.Println(err)
-	} else {
-		fmt.Println(parse)
-	}
+	// 加载本地化文件
+	bundle.LoadMessageFile("point-ru.json")
+	bundle.LoadMessageFile("point-zh.json")
+	//bundle.LoadMessageFile("point_ru.json")
+	//bundle.LoadMessageFile("ru.json")
+	tags := bundle.LanguageTags()
+	fmt.Println(tags)
+	// 创建一个Localizer对象，用于将本地化字符串转换为特定语言和地区的字符串
+	localizer := i18n.NewLocalizer(bundle, "ru")
 
-	fmt.Println(time.UnixMilli(t))
+	//使用Localizer对象获取本地化字符串
+	//pointAlarm := localizer.MustLocalize(&i18n.LocalizeConfig{
+	//	DefaultMessage: &i18n.Message{
+	//		ID:    "pointAlarm.告警",
+	//		Other: "aa",
+	//	}, MessageID: "pointAlarm.告警",
+	//})
 
+	pointAlarm := localizer.MustLocalize(&i18n.LocalizeConfig{
+		MessageID: "aaa",
+	})
+	fmt.Println(pointAlarm)
 }

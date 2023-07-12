@@ -56,13 +56,13 @@ func main() {
 
 	fmt.Println(translation)
 
-	translation2 := loc.MustLocalize(&i18n.LocalizeConfig{
-		MessageID: "hsms031",
-		TemplateData: map[string]interface{}{
-			"reason":   "Alex",
-			"current":  "current",
-			"boundary": "Bbb",
-		},
-	})
-	fmt.Println(translation2)
+	//translation2 := loc.MustLocalize(&i18n.LocalizeConfig{
+	//	MessageID: "hsms18",
+	//	TemplateData: map[string]interface{}{
+	//		"reason":   "Alex",
+	//		"current":  "current",
+	//		"boundary": "Bbb",
+	//	},
+	//})
+	//fmt.Println(translation2)
 }

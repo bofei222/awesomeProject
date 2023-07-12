@@ -8,24 +8,32 @@ import (
 // 省略了err的判断，正常情况需要有，否则可能panic
 func main() {
 
+	// false
+
 	expr, _ := govaluate.NewEvaluableExpression("foo > 0")
 	parameters := make(map[string]interface{})
 	parameters["foo"] = -1
 	result, _ := expr.Evaluate(parameters) // 即 -1 > 0
 	fmt.Println(result)                    // false
 
-	expr, _ = govaluate.NewEvaluableExpression("pingPassFlag=='1'")
+	expr, _ = govaluate.NewEvaluableExpression("Met1sWSpd6>150")
 	parameters = make(map[string]interface{})
-	parameters["pingPassFlag"] = "1"
+	parameters["Met1sWSpd6"] = 5.0
 	result, _ = expr.Evaluate(parameters) // 即 -1 > 0
 	fmt.Println(result)
 
-	//expr, _ = govaluate.NewEvaluableExpression("(requests_made * requests_succeeded / 100) >= 90")
-	//parameters = make(map[string]interface{})
-	//parameters["requests_made"] = 100
-	//parameters["requests_succeeded"] = 80
-	//result, _ = expr.Evaluate(parameters) // 即 80 >= 90
-	//fmt.Println(result)                   // false
+	expr, _ = govaluate.NewEvaluableExpression("pingPassFlag==1")
+	parameters = make(map[string]interface{})
+	parameters["pingPassFlag"] = 1
+	result, _ = expr.Evaluate(parameters) // 即 -1 > 0
+	fmt.Println(result)
+
+	expr, _ = govaluate.NewEvaluableExpression("(requests_made * requests_succeeded / 100) >= 90")
+	parameters = make(map[string]interface{})
+	parameters["requests_made"] = 100
+	parameters["requests_succeeded"] = 80
+	result, _ = expr.Evaluate(parameters) // 即 80 >= 90
+	fmt.Println(result)                   // false
 	//
 	//expr, _ = govaluate.NewEvaluableExpression("(mem_used / total_mem) * 100")
 	//parameters = make(map[string]interface{})
