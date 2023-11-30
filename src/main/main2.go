@@ -42,12 +42,12 @@ func main() {
 	bundle.MustLoadMessageFile("el.json")
 
 	loc := i18n.NewLocalizer(bundle, "en")
-	messagesCount := 10
+	messagesCount := 20
 
 	translation := loc.MustLocalize(&i18n.LocalizeConfig{
-		MessageID: "message",
+		MessageID: "mee.message",
 		TemplateData: map[string]interface{}{
-			"name":  "Alex",
+			"name":  "中文名字",
 			"Count": messagesCount,
 			"Aaa":   "Bbb",
 		},

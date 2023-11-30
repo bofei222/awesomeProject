@@ -12,10 +12,8 @@
     "报警": "报警",
     "一般故障": "一般故障"
   },
-  "message": {
-    "description": "The number of messages a person has",
-    "one": "{{.name}} has {{.Count}} message1.",
-    "other": "{{.name}} has {{.Count}} messages2."
+  "mee": {
+    "message": "{{.name}} has {{.Count}} message1."
   },
   "hsms01": "无法获取其他节点的信息,请检查网络以及对方节点的服务状态",
   "hsms02": "服务器{{.host}离线",
