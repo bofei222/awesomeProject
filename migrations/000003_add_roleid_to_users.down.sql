@@ -1,0 +1,1 @@
+ALTER TABLE users111 DROP COLUMN  role_id;
