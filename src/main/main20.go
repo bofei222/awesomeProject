@@ -10,12 +10,12 @@ type Watermark struct {
 	timestamp time.Time
 }
 
-type Event struct {
+type Event20 struct {
 	timestamp time.Time
 }
 
 type EventStream struct {
-	events    []Event
+	events    []Event20
 	watermark *Watermark
 	mutex     sync.Mutex
 	timer     *time.Timer
@@ -23,13 +23,13 @@ type EventStream struct {
 
 func NewEventStream() *EventStream {
 	return &EventStream{
-		events:    make([]Event, 0),
+		events:    make([]Event20, 0),
 		watermark: &Watermark{},
 		timer:     time.NewTimer(0),
 	}
 }
 
-func (s *EventStream) AddEvent(event Event) {
+func (s *EventStream) AddEvent(event Event20) {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 	s.events = append(s.events, event)
@@ -73,7 +73,7 @@ func main() {
 	// 模拟事件流
 	go func() {
 		for i := 0; i < 10; i++ {
-			event := Event{timestamp: time.Now()}
+			event := Event20{timestamp: time.Now()}
 			stream.AddEvent(event)
 			time.Sleep(500 * time.Millisecond) // 模拟事件之间的时间间隔
 		}
