@@ -4,6 +4,7 @@ go 1.16
 
 require (
 	github.com/Knetic/govaluate v3.0.0+incompatible
+	github.com/apache/arrow/go/arrow v0.0.0-20200730104253-651201b0f516
 	github.com/apache/arrow/go/v13 v13.0.0
 	github.com/apache/arrow/go/v15 v15.0.0-20240117040953-f55c0d75ce3c
 	github.com/fsnotify/fsnotify v1.4.9
@@ -18,9 +19,13 @@ require (
 	github.com/jmoiron/sqlx v1.3.4
 	github.com/nicksnyder/go-i18n/v2 v2.2.1
 	github.com/orcaman/concurrent-map v0.0.0-20210501183033-44dafcb38ecc
+	github.com/pkg/errors v0.9.1
 	github.com/robfig/cron/v3 v3.0.0
 	github.com/tealeg/xlsx v1.0.5
-	github.com/xitongsys/parquet-go v1.6.1
+	github.com/xitongsys/parquet-go v1.6.2
+	github.com/xitongsys/parquet-go-source v0.0.0-20200817004010-026bad9b25d0
+	go.opencensus.io v0.24.0
+	golang.org/x/exp v0.0.0-20231006140011-7918f672742d
 	golang.org/x/net v0.18.0
 	golang.org/x/text v0.14.0
 	google.golang.org/grpc v1.59.0

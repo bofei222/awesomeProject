@@ -5,11 +5,13 @@ import (
 	"math/rand"
 	"net/http"
 	_ "net/http/pprof" // 导入 pprof 包以启用 pprof 路由
+	"reflect"
+	"sync"
 	"time"
 )
 
 const (
-	numTurbines = 100
+	numTurbines = 10
 	numRecords  = 3600
 )
 
@@ -4031,22 +4033,17 @@ func generateRandomWindTurbineData33(timestamp time.Time) WindTurbineData33 {
 	}
 }
 
-// Calculate average for specified field
-func calculateAverage33(data []WindTurbineData33, field string) float32 {
+// Calculate average for specified fields
+func calculateAverage34(data []WindTurbineData33, startField, endField string) float32 {
 	var sum float32
-	var count int
 
+	var count int
 	for _, record := range data {
-		switch field {
-		case "MC001":
-			sum += record.MC001
-		case "MC002":
-			sum += record.MC002
-		case "MC003":
-			sum += record.MC003
-			// ... 可以添加更多的 case 处理 ...
+		v := reflect.ValueOf(record)
+		for key := range fieldIndexes {
+			mc004 := v.FieldByName(key)
+			sum += float32(mc004.Float())
 		}
-		count++
 	}
 
 	if count == 0 {
@@ -4055,13 +4052,21 @@ func calculateAverage33(data []WindTurbineData33, field string) float32 {
 	return sum / float32(count)
 }
 
+// 定义索引映射
+var fieldIndexes = map[string]int{
+	"MC004": 0, "MC005": 1, "MC006": 2, "MC007": 3, "MC008": 4,
+	"MC009": 5, "MC010": 6, "MC011": 7, "MC012": 8, "MC013": 9,
+	"MC014": 10, "MC015": 11, "MC016": 12, "MC017": 13, "MC018": 14,
+	"MC019": 15, "MC020": 16, "MC021": 17, "MC022": 18, "MC023": 19,
+	"MC024": 20,
+}
+
 func main() {
 	// 启动 pprof HTTP 服务器
 	go func() {
 		fmt.Println("Starting pprof server at :6060")
 		http.ListenAndServe("localhost:6060", nil)
 	}()
-
 	// 用于存储风机数据
 	turbineData := make(map[string][]WindTurbineData33)
 
@@ -4079,12 +4084,53 @@ func main() {
 		// 存储数据到 map 中
 		turbineData[turbineID] = records
 	}
+	fmt.Println("准备挖泥巴")
+	// 定义等待组
+	var wg sync.WaitGroup
 
-	// 计算某个字段的平均值
-	for turbineID, records := range turbineData {
-		averageMC003 := calculateAverage33(records, "MC003")
-		fmt.Printf("Turbine ID: %s, Average MC003 over 3600 seconds: %.2f\n", turbineID, averageMC003)
-		break // 仅打印第一台风机的结果以避免输出过多
-	}
-	time.Sleep(60 * time.Minute)
+	// 每 30 秒查询风机 0003 的 MC004 到 MC024 平均值
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		ticker := time.NewTicker(30 * time.Second)
+		defer ticker.Stop()
+
+		for range ticker.C {
+			records := turbineData["003"]
+			start := time.Now()
+			averageMC004ToMC024 := calculateAverage34(records, "MC004", "MC024")
+			// 计算耗时
+			time := time.Since(start)
+			fmt.Printf("Average MC004 to MC024 for ： %v Turbine 0003 over 3600 seconds: %.2f\n", time, averageMC004ToMC024)
+		}
+	}()
+
+	// 每 3 分钟查询所有风机的 MC004 到 MC024 平均值的平均
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		ticker := time.NewTicker(3 * time.Minute)
+		defer ticker.Stop()
+
+		for range ticker.C {
+			var total float32
+			var count int
+			start := time.Now()
+			for _, records := range turbineData {
+				average := calculateAverage34(records, "MC004", "MC024")
+				total += average
+				count++
+			}
+
+			if count > 0 {
+				overallAverage := total / float32(count)
+				// 计算耗时
+				time := time.Since(start)
+				fmt.Printf("Overall average MC004 to MC024 for：%v all turbines: %.2f\n", time, overallAverage)
+			}
+		}
+	}()
+
+	// 阻止主程序退出
+	select {}
 }
