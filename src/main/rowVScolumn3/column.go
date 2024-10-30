@@ -65,8 +65,77 @@ func main() {
 	// 输出某台风机在第 0 秒的数据，检查是否写入成功
 	fmt.Println("Example Data for Turbine 0 at second 0:")
 
-	for i := 0; i < 5; i++ {
-		fmt.Printf("Bool_var_%d: %v\n", i+1, boolData[0][i][0])
-		fmt.Printf("Float_var_%d: %v\n", i+1, floatData[0][i][0])
+	//for i := 0; i < 5; i++ {
+	//	fmt.Printf("Bool_var_%d: %v\n", i+1, boolData[0][i][0])
+	//	fmt.Printf("Float_var_%d: %v\n", i+1, floatData[0][i][0])
+	//}
+
+	// 定时任务：每 30 秒计算 001 号风机的平均值
+	go func() {
+		ticker := time.NewTicker(30 * time.Second)
+		defer ticker.Stop()
+
+		for range ticker.C {
+			start := time.Now()
+			averages := calculateSingleTurbineAverages()
+			fmt.Println("calculateSingleTurbineAverages耗时：", time.Since(start))
+			fmt.Println("001号风机的平均值:", averages)
+		}
+	}()
+
+	// 定时任务：每 3 分钟计算所有风机的平均值
+	go func() {
+		ticker := time.NewTicker(3 * time.Minute)
+		defer ticker.Stop()
+
+		for range ticker.C {
+			start := time.Now()
+			allAverages := calculateAllTurbinesAverages()
+			fmt.Println("所有风机的平均值:")
+			for i, averages := range allAverages {
+				fmt.Printf("风机 %03d: %v\n", i+1, averages)
+			}
+			fmt.Println("calculateAllTurbinesAverages耗时：", time.Since(start))
+		}
+	}()
+
+	// 防止程序退出
+	select {}
+}
+
+// 计算 001 号风机 floatData 中第 4~24 个变量的 3600 秒平均值，并打印耗时
+func calculateSingleTurbineAverages() []float32 {
+
+	averages := make([]float32, 21) // 第 4~24 个变量共 21 个
+
+	for i := 3; i <= 23; i++ { // 变量索引 3~23
+		var sum float32
+		for second := 0; second < 3600; second++ {
+			sum += floatData[0][i][second]
+		}
+		averages[i-3] = sum / 3600 // 计算平均值
 	}
+
+	return averages
+}
+
+// 计算所有风机 floatData 中第 4~24 个变量的 3600 秒平均值
+func calculateAllTurbinesAverages() [][]float32 {
+	allAverages := make([][]float32, 100) // 每台风机的平均值
+
+	for turbineID := 0; turbineID < 100; turbineID++ {
+		averages := make([]float32, 21) // 每台风机 21 个变量的平均值
+
+		for i := 3; i <= 23; i++ { // 变量索引 3~23
+			var sum float32
+			for second := 0; second < 3600; second++ {
+				sum += floatData[turbineID][i][second]
+			}
+			averages[i-3] = sum / 3600 // 计算平均值
+		}
+
+		allAverages[turbineID] = averages
+	}
+
+	return allAverages
 }
