@@ -1,4 +1,4 @@
-package main
+package origin
 
 //import (
 //	"github.com/xitongsys/parquet-go-source/local"
