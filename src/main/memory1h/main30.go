@@ -48,7 +48,7 @@ func main() {
 		http.ListenAndServe("localhost:6060", nil)
 	}()
 
-	// 模拟 10 台风机，3600 秒的数据
+	// 模拟 120 台风机，3600 秒的数据
 	numWindTurbines := 120
 	durationInSeconds := 3600
 	startTime := time.Now()

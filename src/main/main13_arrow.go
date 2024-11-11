@@ -108,7 +108,7 @@ func main() {
 	tbl = array.NewTable(schema, []arrow.Column{*col1, *col2, *col3}, -1)
 	defer tbl.Release()
 
-	f, err := os.Create("flat_table.parquet")
+	f, err := os.Create("flat_table13.parquet")
 	if err != nil {
 		panic(err)
 	}

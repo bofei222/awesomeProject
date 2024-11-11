@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package proto;
+
+option go_package = "./;proto";
+
+service WindTurbineService {
+  // 接口 1：写入风机数据
+  rpc SendData(WindTurbineData) returns (WriteResponse);
+
+  // 接口 2：查询指定风机的平均值
+  rpc GetWindTurbineAverage(WindTurbineAverageRequest) returns (WindTurbineAverageResponse);
+
+  // 接口 3：查询全场风机的平均值
+  rpc GetAllWindTurbinesAverage(AllWindTurbinesAverageRequest) returns (WindTurbinesAverageResponse);
+}
+
+message WindTurbineData {
+  int64 timestamp = 1;
+  repeated float floatData = 2;
+  repeated bool boolData = 3;
+  string turbineID = 4;
+}
+
+message WriteResponse {
+  string message = 1;
+}
+
+message WindTurbineAverageRequest {
+  string turbineID = 1;
+}
+
+message WindTurbineAverageResponse {
+  float average = 1;
+}
+
+message AllWindTurbinesAverageRequest {}
+
+message WindTurbinesAverageResponse {
+  float average = 1;
+}
+
