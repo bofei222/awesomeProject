@@ -42,6 +42,8 @@ github.com/apache/arrow/go/v13 v13.0.0 h1:kELrvDQuKZo8csdWYqBQfyi431x6Zs/YJTEgUu
 github.com/apache/arrow/go/v13 v13.0.0/go.mod h1:W69eByFNO0ZR30q1/7Sr9d83zcVZmF2MiP3fFYAWJOc=
 github.com/apache/arrow/go/v15 v15.0.0-20240117040953-f55c0d75ce3c h1:Hrq/Yinf6pUC+1imRklWIwcrIR75ayF9dL7/9MM0NMA=
 github.com/apache/arrow/go/v15 v15.0.0-20240117040953-f55c0d75ce3c/go.mod h1:DGXsR3ajT524njufqf95822i+KTh+yea1jass9YXgjA=
+github.com/apache/arrow/go/v18 v18.0.0-20241007013041-ab95a4d25142 h1:6EtsUpu9/vLtVl6oVpFiZe9GRax7STd2bG55VNwsRdI=
+github.com/apache/arrow/go/v18 v18.0.0-20241007013041-ab95a4d25142/go.mod h1:GjCnS5QddrJzyqrdYqCUvwlND7SfAw4WH/722M2U2NM=
 github.com/apache/thrift v0.0.0-20181112125854-24918abba929/go.mod h1:cp2SuWMxlEZw2r+iP2GNCdIi4C1qmUzdZFSVb+bacwQ=
 github.com/apache/thrift v0.14.2/go.mod h1:cp2SuWMxlEZw2r+iP2GNCdIi4C1qmUzdZFSVb+bacwQ=
 github.com/apache/thrift v0.21.0 h1:tdPmh/ptjE1IJnhbhrcl2++TauVjy242rkV/UzJChnE=

@@ -20,7 +20,7 @@ func main() {
 	defer conn.Close()
 
 	client := pb.NewWindTurbineServiceClient(conn)
-	turbineIDs := make([]string, 120)
+	turbineIDs := make([]string, 300)
 	for i := 0; i < 120; i++ {
 		turbineIDs[i] = fmt.Sprintf("%04d", i+1)
 	}
@@ -52,7 +52,7 @@ func main() {
 
 // 发送风机数据
 func sendWindTurbineData(client pb.WindTurbineServiceClient, turbineID string) {
-	for range 3600 {
+	for range 1800 {
 
 		time.Sleep(time.Millisecond * 10)
 		floatData := make([]float32, 1000)

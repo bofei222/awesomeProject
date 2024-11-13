@@ -3,10 +3,10 @@
 package main
 
 import (
-	"github.com/apache/arrow/go/v15/arrow"
-	"github.com/apache/arrow/go/v15/arrow/array"
-	"github.com/apache/arrow/go/v15/arrow/memory"
-	"github.com/apache/arrow/go/v15/parquet/pqarrow"
+	"github.com/apache/arrow-go/v18/arrow"
+	"github.com/apache/arrow-go/v18/arrow/array"
+	"github.com/apache/arrow-go/v18/arrow/memory"
+	"github.com/apache/arrow-go/v18/parquet/pqarrow"
 	"os"
 )
 
@@ -47,6 +47,7 @@ func main() {
 
 	col2 := func() *arrow.Column {
 		chunk := func() *arrow.Chunked {
+
 			fb := array.NewFloat64Builder(memory.DefaultAllocator)
 			defer fb.Release()
 

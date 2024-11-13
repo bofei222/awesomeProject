@@ -9,6 +9,7 @@ require (
 	github.com/apache/arrow-go/v18 v18.0.0
 	github.com/apache/arrow/go/v13 v13.0.0
 	github.com/apache/arrow/go/v15 v15.0.0-20240117040953-f55c0d75ce3c
+	github.com/apache/arrow/go/v18 v18.0.0-20241007013041-ab95a4d25142
 	github.com/fsnotify/fsnotify v1.4.9
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/go-sql-driver/mysql v1.5.0
