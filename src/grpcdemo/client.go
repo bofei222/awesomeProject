@@ -21,7 +21,7 @@ func main() {
 
 	client := pb.NewWindTurbineServiceClient(conn)
 	turbineIDs := make([]string, 300)
-	for i := 0; i < 300; i++ {
+	for i := 0; i < 120; i++ {
 		turbineIDs[i] = fmt.Sprintf("%04d", i+1)
 	}
 
@@ -30,7 +30,7 @@ func main() {
 		go sendWindTurbineData(client, turbineID)
 	}
 
-	/*// 定时查询风机 0003 的平均值
+	// 定时查询风机 0003 的平均值
 	go func() {
 		for {
 			time.Sleep(30 * time.Second)
@@ -44,7 +44,7 @@ func main() {
 			time.Sleep(3 * time.Minute)
 			getAllWindTurbinesAverage(client)
 		}
-	}()*/
+	}()
 	http.Handle("/metrics", promhttp.Handler())
 	http.ListenAndServe(":2112", nil)
 	select {} // 保持客户端运行
@@ -54,7 +54,7 @@ func main() {
 func sendWindTurbineData(client pb.WindTurbineServiceClient, turbineID string) {
 	for {
 
-		time.Sleep(time.Millisecond * 1000)
+		time.Sleep(time.Millisecond * 10)
 		floatData := make([]float32, 1000)
 		boolData := make([]bool, 1000)
 
@@ -75,7 +75,6 @@ func sendWindTurbineData(client pb.WindTurbineServiceClient, turbineID string) {
 			log.Printf("Failed to send data for turbine %s: %v", turbineID, err)
 		}
 	}
-
 }
 
 // 查询单个风机的平均值

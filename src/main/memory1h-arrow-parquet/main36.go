@@ -61,7 +61,6 @@ func createArrowTable(turbineData []WindTurbineData) (*arrow.Table, error) {
 
 	// 创建 1000 个 bool 列
 	for i := 0; i < 1000; i++ {
-
 		fields = append(fields, arrow.Field{Name: fmt.Sprintf("MA%04d", i+1), Type: new(arrow.BooleanType)})
 	}
 
@@ -90,18 +89,30 @@ func createArrowTable(turbineData []WindTurbineData) (*arrow.Table, error) {
 	}
 
 	// 创建 Chunked 数组
-	chunks := []arrow.Array{
-		timestampBuilder.NewArray(),
+	timestampChunk := arrow.NewChunked(arrow.PrimitiveTypes.Int64, []arrow.Array{timestampBuilder.NewArray()})
+	floatChunks := make([]arrow.Chunked, 1000)
+	boolChunks := make([]arrow.Chunked, 1000)
+
+	for i := 0; i < 1000; i++ {
+		floatChunks[i] = *arrow.NewChunked(arrow.PrimitiveTypes.Float32, []arrow.Array{floatBuilders[i].NewArray()})
+		boolChunks[i] = *arrow.NewChunked(new(arrow.BooleanType), []arrow.Array{boolBuilders[i].NewArray()})
+	}
+
+	// 创建 Arrow Column
+	columns := []arrow.Column{
+		*arrow.NewColumn(schema.Field(0), timestampChunk),
 	}
 
 	for i := 0; i < 1000; i++ {
-		chunks = append(chunks, floatBuilders[i].NewArray())
-		chunks = append(chunks, boolBuilders[i].NewArray())
+		columns = append(columns, *arrow.NewColumn(schema.Field(i+1), &floatChunks[i]))
+	}
+	for i := 0; i < 1000; i++ {
+		columns = append(columns, *arrow.NewColumn(schema.Field(i+1001), &boolChunks[i]))
 	}
 
 	// 创建 Arrow Table
-	table := array.NewTable(schema, chunks, int64(len(turbineData)))
-	return table, nil
+	table := array.NewTable(schema, columns, int64(len(turbineData)))
+	return &table, nil
 }
 
 // writeParquet 写入 Parquet 文件
@@ -126,8 +137,8 @@ func main() {
 	}()
 
 	// 模拟 120 台风机，3600 秒的数据
-	numWindTurbines := 120
-	durationInSeconds := 3600
+	numWindTurbines := 100
+	durationInSeconds := 1800
 	startTime := time.Now()
 
 	// 存储所有风机的数据
