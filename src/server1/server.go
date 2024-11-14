@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/panjf2000/ants/v2"
 	"log"
 	_ "math/rand"
 	"net"
@@ -143,28 +144,31 @@ func writeParquet(table *arrow.Table, filename string) error {
 	defer f.Close()
 
 	// 写入 Parquet
-	err = pqarrow.WriteTable(*table, f, 1024, nil, pqarrow.DefaultWriterProps())
+	err = pqarrow.WriteTable(*table, f, 1800, nil, pqarrow.DefaultWriterProps())
 	return err
 }
 
-// 记录所有风机数据的内存存储
-var windTurbineData = make(map[string][]*pb.WindTurbineData)
-var mu sync.Mutex
+// 使用 sync.Map 代替 map 和锁
+var wtData sync.Map
+
+var pool *ants.Pool
 
 // 处理数据写入
 func (s *WindTurbineServer) SendData(ctx context.Context, data *pb.WindTurbineData) (*pb.WriteResponse, error) {
-	mu.Lock()
-	defer mu.Unlock()
+	// 使用 sync.Map 读取风机 ID 对应的数据
+	loadedData, _ := wtData.LoadOrStore(data.TurbineID, make([]*pb.WindTurbineData, 0))
 
-	// 将新数据追加到对应风机的数组中
-	windTurbineData[data.TurbineID] = append(windTurbineData[data.TurbineID], data)
+	// 将新数据追加到对应风机的数据列表中
+	dataList := loadedData.([]*pb.WindTurbineData)
+	dataList = append(dataList, data)
 
-	// 检查是否达到 1800 条数据
-	if len(windTurbineData[data.TurbineID]) >= 1800 {
+	// 如果数据达到 1800 条，则创建 Arrow Table 并生成 Parquet 文件
+	if len(dataList) >= 1800 {
+		// 将数据转为 WindTurbineData 结构，便于处理
 
 		// 调用 createArrowTable 生成 Arrow Table
 		start1 := time.Now()
-		table, err := createArrowTable(windTurbineData[data.TurbineID])
+		table, err := createArrowTable(dataList)
 		// 打印createArrowTable耗时
 		fmt.Printf("turbine: %screateArrowTable耗时：%v\n", data.TurbineID, time.Since(start1))
 		if err != nil {
@@ -172,78 +176,32 @@ func (s *WindTurbineServer) SendData(ctx context.Context, data *pb.WindTurbineDa
 		}
 
 		// 写入 Parquet 文件
-		start2 := time.Now()
-		// parquetFIle 加windTurbineData[data.TurbineID][0].Timestamp前缀
-		parquetFilename := fmt.Sprintf("%s_%d.parquet", data.TurbineID, windTurbineData[data.TurbineID][0].Timestamp)
+		parquetFilename := fmt.Sprintf("%s_%d.parquet", data.TurbineID, dataList[0].Timestamp)
 
-		err = writeParquet(table, parquetFilename)
-		fmt.Printf("turbine: %swriteParquet耗时：%v\n", data.TurbineID, time.Since(start2))
+		err = pool.Submit(func() {
+			start2 := time.Now()
+			err := writeParquet(table, parquetFilename)
+			// 打印writeParquet耗时
+			fmt.Printf("turbine: %swriteParquet耗时：%v\n", data.TurbineID, time.Since(start2))
+			if err != nil {
+				log.Printf("Failed to write Parquet file: %v", err)
+			}
+		})
 		if err != nil {
-			return nil, fmt.Errorf("failed to write Parquet file: %v", err)
+			fmt.Println("Failed to submit task to pool:", err)
+			return nil, err
 		}
 
 		// 清空该风机的数据
-		delete(windTurbineData, data.TurbineID)
-
+		wtData.Store(data.TurbineID, make([]*pb.WindTurbineData, 0))
+		return &pb.WriteResponse{Message: "Data received"}, nil
 	}
+
+	// 更新 windTurbineData 中的风机数据
+	wtData.Store(data.TurbineID, dataList)
 
 	// 返回响应
 	return &pb.WriteResponse{Message: "Data received"}, nil
-}
-
-// 查询单个风机的平均值
-func (s *WindTurbineServer) GetWindTurbineAverage(ctx context.Context, req *pb.WindTurbineAverageRequest) (*pb.WindTurbineAverageResponse, error) {
-	// 记录请求开始时间
-	start := time.Now()
-
-	mu.Lock()
-	defer mu.Unlock()
-
-	data := windTurbineData[req.TurbineID]
-	if len(data) == 0 {
-		return &pb.WindTurbineAverageResponse{Average: 0}, nil
-	}
-
-	var sum float32
-	var count int
-	for _, entry := range data {
-		for _, value := range entry.FloatData {
-			sum += value
-			count++
-		}
-	}
-
-	// 更新指标
-	requestCount.WithLabelValues("GetWindTurbineAverage").Inc()
-	requestDuration.WithLabelValues("GetWindTurbineAverage").Observe(time.Since(start).Seconds())
-
-	return &pb.WindTurbineAverageResponse{Average: sum / float32(count)}, nil
-}
-
-// 查询所有风机的全场平均值
-func (s *WindTurbineServer) GetAllWindTurbinesAverage(ctx context.Context, req *pb.AllWindTurbinesAverageRequest) (*pb.WindTurbinesAverageResponse, error) {
-	// 记录请求开始时间
-	start := time.Now()
-
-	mu.Lock()
-	defer mu.Unlock()
-
-	var totalSum float32
-	var totalCount int
-	for _, dataList := range windTurbineData {
-		for _, entry := range dataList {
-			for _, value := range entry.FloatData {
-				totalSum += value
-				totalCount++
-			}
-		}
-	}
-
-	// 更新指标
-	requestCount.WithLabelValues("GetAllWindTurbinesAverage").Inc()
-	requestDuration.WithLabelValues("GetAllWindTurbinesAverage").Observe(time.Since(start).Seconds())
-
-	return &pb.WindTurbinesAverageResponse{Average: totalSum / float32(totalCount)}, nil
 }
 
 // 用于监控的 HTTP 端点
@@ -257,6 +215,7 @@ func main() {
 	// 启动 Prometheus 监控 HTTP 服务器
 	go startMetricsServer()
 
+	pool, _ = ants.NewPool(6)
 	listener, err := net.Listen("tcp", ":50051")
 	if err != nil {
 		log.Fatalf("Failed to listen on port 50051: %v", err)

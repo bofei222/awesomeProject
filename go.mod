@@ -21,6 +21,7 @@ require (
 	github.com/jmoiron/sqlx v1.3.4
 	github.com/nicksnyder/go-i18n/v2 v2.2.1
 	github.com/orcaman/concurrent-map v0.0.0-20210501183033-44dafcb38ecc
+	github.com/panjf2000/ants/v2 v2.10.0
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.20.5
 	github.com/robfig/cron/v3 v3.0.0
