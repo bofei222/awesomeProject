@@ -9,6 +9,7 @@ import (
 	"github.com/xitongsys/parquet-go/writer"
 )
 
+// struct的反射和属性赋值的反射
 type Student struct {
 	Name    string               `parquet:"name=name, type=BYTE_ARRAY, convertedtype=UTF8"`
 	Age     int32                `parquet:"name=age, type=INT32"`

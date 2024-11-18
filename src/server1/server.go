@@ -71,6 +71,7 @@ func createArrowTable(turbineData []*pb.WindTurbineData) (*arrow.Table, error) {
 	// 构建 Schema
 	fields := []arrow.Field{
 		{Name: "Timestamp", Type: arrow.PrimitiveTypes.Int64},
+		{Name: "TurbineID", Type: arrow.BinaryTypes.String},
 	}
 
 	// 创建 1000 个 float32 列
@@ -78,8 +79,8 @@ func createArrowTable(turbineData []*pb.WindTurbineData) (*arrow.Table, error) {
 		fields = append(fields, arrow.Field{Name: fmt.Sprintf("MC%04d", i+1), Type: arrow.PrimitiveTypes.Float32})
 	}
 
-	// 创建 1000 个 bool 列
-	for i := 0; i < 1000; i++ {
+	// 创建 2000 个 bool 列
+	for i := 0; i < 2000; i++ {
 		fields = append(fields, arrow.Field{Name: fmt.Sprintf("MA%04d", i+1), Type: new(arrow.BooleanType)})
 	}
 
@@ -88,45 +89,55 @@ func createArrowTable(turbineData []*pb.WindTurbineData) (*arrow.Table, error) {
 
 	// 创建 Builder 和 Chunked 数组
 	timestampBuilder := array.NewInt64Builder(memory.DefaultAllocator)
+	turbineIDBuilder := array.NewStringBuilder(memory.DefaultAllocator)
 	floatBuilders := make([]*array.Float32Builder, 1000)
-	boolBuilders := make([]*array.BooleanBuilder, 1000)
+	boolBuilders := make([]*array.BooleanBuilder, 2000)
 
 	// 初始化 float32 和 bool 构建器
 	for i := 0; i < 1000; i++ {
 		floatBuilders[i] = array.NewFloat32Builder(memory.DefaultAllocator)
+	}
+	for i := 0; i < 2000; i++ {
 		boolBuilders[i] = array.NewBooleanBuilder(memory.DefaultAllocator)
 	}
 
 	// 填充数据
 	for _, data := range turbineData {
 		timestampBuilder.Append(data.Timestamp)
+		turbineIDBuilder.Append(data.TurbineID) // 添加 TurbineID 数据
 
 		for i := 0; i < 1000; i++ {
 			floatBuilders[i].Append(data.FloatData[i])
+		}
+		for i := 0; i < 2000; i++ {
 			boolBuilders[i].Append(data.BoolData[i])
 		}
 	}
 
 	// 创建 Chunked 数组
 	timestampChunk := arrow.NewChunked(arrow.PrimitiveTypes.Int64, []arrow.Array{timestampBuilder.NewArray()})
+	turbineIDChunk := arrow.NewChunked(arrow.BinaryTypes.String, []arrow.Array{turbineIDBuilder.NewArray()})
 	floatChunks := make([]arrow.Chunked, 1000)
-	boolChunks := make([]arrow.Chunked, 1000)
+	boolChunks := make([]arrow.Chunked, 2000)
 
 	for i := 0; i < 1000; i++ {
 		floatChunks[i] = *arrow.NewChunked(arrow.PrimitiveTypes.Float32, []arrow.Array{floatBuilders[i].NewArray()})
+	}
+	for i := 0; i < 2000; i++ {
 		boolChunks[i] = *arrow.NewChunked(new(arrow.BooleanType), []arrow.Array{boolBuilders[i].NewArray()})
 	}
 
 	// 创建 Arrow Column
 	columns := []arrow.Column{
 		*arrow.NewColumn(schema.Field(0), timestampChunk),
+		*arrow.NewColumn(schema.Field(1), turbineIDChunk), // 添加 TurbineID 列
 	}
 
 	for i := 0; i < 1000; i++ {
-		columns = append(columns, *arrow.NewColumn(schema.Field(i+1), &floatChunks[i]))
+		columns = append(columns, *arrow.NewColumn(schema.Field(i+2), &floatChunks[i]))
 	}
-	for i := 0; i < 1000; i++ {
-		columns = append(columns, *arrow.NewColumn(schema.Field(i+1001), &boolChunks[i]))
+	for i := 0; i < 2000; i++ {
+		columns = append(columns, *arrow.NewColumn(schema.Field(i+1002), &boolChunks[i]))
 	}
 
 	// 创建 Arrow Table
@@ -163,7 +174,7 @@ func (s *WindTurbineServer) SendData(ctx context.Context, data *pb.WindTurbineDa
 	dataList = append(dataList, data)
 
 	// 如果数据达到 1800 条，则创建 Arrow Table 并生成 Parquet 文件
-	if len(dataList) >= 1800 {
+	if len(dataList) >= 600 {
 		// 将数据转为 WindTurbineData 结构，便于处理
 
 		// 调用 createArrowTable 生成 Arrow Table

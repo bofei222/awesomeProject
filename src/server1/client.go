@@ -54,12 +54,15 @@ func main() {
 func sendWindTurbineData(client pb.WindTurbineServiceClient, turbineID string) {
 	for {
 
-		time.Sleep(time.Millisecond * 1000)
+		time.Sleep(time.Millisecond * 10)
 		floatData := make([]float32, 1000)
-		boolData := make([]bool, 1000)
+		boolData := make([]bool, 2000)
 
 		for i := 0; i < 1000; i++ {
 			floatData[i] = rand.Float32() * 100.0
+		}
+
+		for i := 0; i < 2000; i++ {
 			boolData[i] = rand.Intn(2) == 1
 		}
 
@@ -73,6 +76,10 @@ func sendWindTurbineData(client pb.WindTurbineServiceClient, turbineID string) {
 		_, err := client.SendData(context.Background(), data)
 		if err != nil {
 			log.Printf("Failed to send data for turbine %s: %v", turbineID, err)
+		} else {
+			// 打印风机号和发送数据的时间
+			fmt.Printf("turbine: %s, time: %v\n", turbineID, time.Now())
+
 		}
 	}
 
