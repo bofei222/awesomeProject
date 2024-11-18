@@ -52,9 +52,14 @@ func main() {
 
 // 发送风机数据
 func sendWindTurbineData(client pb.WindTurbineServiceClient, turbineID string) {
-	for {
+	// 定义周期为 1 秒
+	const cycleDuration = time.Second
 
-		time.Sleep(time.Millisecond * 10)
+	for {
+		// 记录开始时间
+		startTime := time.Now()
+
+		// 准备数据
 		floatData := make([]float32, 1000)
 		boolData := make([]bool, 2000)
 
@@ -73,16 +78,22 @@ func sendWindTurbineData(client pb.WindTurbineServiceClient, turbineID string) {
 			TurbineID: turbineID,
 		}
 
+		// 发送数据
 		_, err := client.SendData(context.Background(), data)
 		if err != nil {
 			log.Printf("Failed to send data for turbine %s: %v", turbineID, err)
 		} else {
-			// 打印风机号和发送数据的时间
 			fmt.Printf("turbine: %s, time: %v\n", turbineID, time.Now())
+		}
 
+		// 计算消耗时间
+		elapsed := time.Since(startTime)
+
+		// 如果耗时小于周期时间，睡眠补足差值
+		if elapsed < cycleDuration {
+			time.Sleep(cycleDuration - elapsed)
 		}
 	}
-
 }
 
 // 查询单个风机的平均值
