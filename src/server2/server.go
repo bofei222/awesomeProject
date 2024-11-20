@@ -76,7 +76,7 @@ func createArrowTable(turbineData []*pb.WindTurbineData) (*arrow.Table, error) {
 
 	// 创建 1000 个 float32 列
 	for i := 0; i < 1000; i++ {
-		fields = append(fields, arrow.Field{Name: fmt.Sprintf("MC%04d", i+1), Type: arrow.PrimitiveTypes.Float32})
+		fields = append(fields, arrow.Field{Name: fmt.Sprintf("MC%04d", i+1), Type: new(arrow.Float32Type)})
 	}
 
 	// 创建 2000 个 bool 列

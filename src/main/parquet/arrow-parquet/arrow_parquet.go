@@ -79,7 +79,7 @@ func main() {
 		chunk := func() *arrow.Chunked {
 			sb := array.NewStringBuilder(memory.DefaultAllocator)
 			defer sb.Release()
-
+			sb.Append("sss")
 			sb.AppendValues([]string{"s1", "s2"}, nil)
 			s1 := sb.NewStringArray()
 			defer s1.Release()
