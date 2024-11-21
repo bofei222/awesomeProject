@@ -13,8 +13,8 @@ import (
 )
 
 func main() {
-	turbineIDs := make([]string, 300)
-	for i := 0; i < 300; i++ {
+	turbineIDs := make([]string, 100)
+	for i := 0; i < 100; i++ {
 		turbineIDs[i] = fmt.Sprintf("%04d", i+1)
 	}
 

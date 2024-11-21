@@ -188,25 +188,27 @@ func (s *WindTurbineServer) SendData(ctx context.Context, data *pb.WindTurbineDa
 			return nil, fmt.Errorf("failed to create Arrow table: %v", err)
 		}
 
-		// 写入 Parquet 文件
-		//parquetFilename := fmt.Sprintf("%s_%d.parquet", data.TurbineID, dataList[0].Timestamp)
-
-		//err = pool.Submit(func() {
-		//	start2 := time.Now()
-		//	err := writeParquet(table, parquetFilename)
-		//	// 打印writeParquet耗时
-		//	fmt.Printf("turbine: %swriteParquet耗时：%v\n", data.TurbineID, time.Since(start2))
-		//	if err != nil {
-		//		log.Printf("Failed to write Parquet file: %v", err)
-		//	}
-		//})
 		t := *table
 		fmt.Println(t.NumRows())
 		if err != nil {
 			fmt.Println("Failed to submit task to pool:", err)
 			return nil, err
 		}
-		time.Sleep(200 * time.Second)
+		time.Sleep(60 * time.Second)
+
+		// 写入 Parquet 文件
+		parquetFilename := fmt.Sprintf("%s_%d.parquet", data.TurbineID, dataList[0].Timestamp)
+
+		start2 := time.Now()
+		err = writeParquet(table, parquetFilename)
+		// 打印writeParquet耗时
+		fmt.Printf("turbine: %swriteParquet耗时：%v\n", data.TurbineID, time.Since(start2))
+		if err != nil {
+			log.Printf("Failed to write Parquet file: %v", err)
+		}
+		//err = pool.Submit(func() {
+		//})
+		time.Sleep(600 * time.Second)
 		// 清空该风机的数据
 		wtData.Store(data.TurbineID, make([]*pb.WindTurbineData, 0))
 		return &pb.WriteResponse{Message: "Data received"}, nil

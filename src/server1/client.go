@@ -13,38 +13,29 @@ import (
 )
 
 func main() {
-	conn, err := grpc.Dial("localhost:50051", grpc.WithInsecure())
-	if err != nil {
-		log.Fatalf("Failed to connect: %v", err)
-	}
-	defer conn.Close()
-
-	client := pb.NewWindTurbineServiceClient(conn)
-	turbineIDs := make([]string, 300)
-	for i := 0; i < 300; i++ {
+	turbineIDs := make([]string, 100)
+	for i := 0; i < 100; i++ {
 		turbineIDs[i] = fmt.Sprintf("%04d", i+1)
 	}
 
-	// 启动风机数据发送的 goroutines
+	// 创建一个 map 用于存储每台风机的客户端连接
+	clientMap := make(map[string]pb.WindTurbineServiceClient)
+
+	// 为每台风机创建一个独立的 gRPC 客户端
 	for _, turbineID := range turbineIDs {
-		go sendWindTurbineData(client, turbineID)
+		conn, err := grpc.Dial("localhost:50051", grpc.WithInsecure())
+		if err != nil {
+			log.Fatalf("Failed to connect for turbine %s: %v", turbineID, err)
+		}
+		defer conn.Close() // 注意：在实际使用时，不要立即关闭连接
+
+		clientMap[turbineID] = pb.NewWindTurbineServiceClient(conn)
+
+		// 启动风机数据发送的 goroutines
+		go sendWindTurbineData(clientMap[turbineID], turbineID)
 	}
 
-	/*// 定时查询风机 0003 的平均值
-	go func() {
-		for {
-			time.Sleep(30 * time.Second)
-			getWindTurbineAverage(client, "0003")
-		}
-	}()
-
-	// 定时查询全场风机的平均值
-	go func() {
-		for {
-			time.Sleep(3 * time.Minute)
-			getAllWindTurbinesAverage(client)
-		}
-	}()*/
+	// 启动 Prometheus 监控
 	http.Handle("/metrics", promhttp.Handler())
 	http.ListenAndServe(":2112", nil)
 	select {} // 保持客户端运行
@@ -94,26 +85,4 @@ func sendWindTurbineData(client pb.WindTurbineServiceClient, turbineID string) {
 			time.Sleep(cycleDuration - elapsed)
 		}
 	}
-}
-
-// 查询单个风机的平均值
-func getWindTurbineAverage(client pb.WindTurbineServiceClient, turbineID string) {
-	req := &pb.WindTurbineAverageRequest{TurbineID: turbineID}
-	resp, err := client.GetWindTurbineAverage(context.Background(), req)
-	if err != nil {
-		log.Printf("Failed to get average for turbine %s: %v", turbineID, err)
-		return
-	}
-	fmt.Printf("Average for turbine %s: %f\n", turbineID, resp.Average)
-}
-
-// 查询全场风机的平均值
-func getAllWindTurbinesAverage(client pb.WindTurbineServiceClient) {
-	req := &pb.AllWindTurbinesAverageRequest{}
-	resp, err := client.GetAllWindTurbinesAverage(context.Background(), req)
-	if err != nil {
-		log.Printf("Failed to get all turbines average: %v", err)
-		return
-	}
-	fmt.Printf("All turbines average: %f\n", resp.Average)
 }
