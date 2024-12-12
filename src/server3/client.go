@@ -13,8 +13,8 @@ import (
 )
 
 func main() {
-	turbineIDs := make([]string, 1)
-	for i := 0; i < 1; i++ {
+	turbineIDs := make([]string, 300)
+	for i := 0; i < 300; i++ {
 		turbineIDs[i] = fmt.Sprintf("%04d", i+1)
 	}
 
@@ -44,7 +44,7 @@ func main() {
 // 发送风机数据
 func sendWindTurbineData(client pb.WindTurbineServiceClient, turbineID string) {
 	// 定义周期为 1 秒
-	const cycleDuration = time.Second / 50
+	const cycleDuration = time.Second
 
 	for {
 		// 记录开始时间

@@ -83,6 +83,8 @@ func createArrowTable(turbineData []*pb.WindTurbineData) (*arrow.Table, error) {
 	for i := 0; i < 2000; i++ {
 		fields = append(fields, arrow.Field{Name: fmt.Sprintf("MA%04d", i+1), Type: new(arrow.BooleanType)})
 	}
+	boolean := arrow.FixedWidthTypes.Boolean
+	fmt.Println(boolean)
 
 	// 创建 Schema
 	schema := arrow.NewSchema(fields, nil)
@@ -152,10 +154,12 @@ func writeParquet(table *arrow.Table, filename string) error {
 	if err != nil {
 		return err
 	}
-	defer f.Close()
 
 	// 写入 Parquet
-	err = pqarrow.WriteTable(*table, f, 1800, nil, pqarrow.DefaultWriterProps())
+	err = pqarrow.WriteTable(*table, f, 86400, nil, pqarrow.DefaultWriterProps())
+	t := *table
+	fmt.Println(t.NumRows())
+	t.Release() // 手动释放
 	return err
 }
 
@@ -197,15 +201,23 @@ func (s *WindTurbineServer) SendData(ctx context.Context, data *pb.WindTurbineDa
 		// 写入 Parquet 文件
 		parquetFilename := fmt.Sprintf("%s_%d.parquet", data.TurbineID, dataList[0].Timestamp)
 
-		start2 := time.Now()
-		err = writeParquet(table, parquetFilename)
+		go func(parquetFilename string, table *arrow.Table) {
+			err = pool.Submit(func() {
+				start2 := time.Now()
+				err := writeParquet(table, parquetFilename)
+				fmt.Printf("turbine: %swriteParquet耗时：%v\n", data.TurbineID, time.Since(start2))
+				if err != nil {
+					log.Printf("Failed to write Parquet file: %v", err)
+					return
+				}
+			})
+
+		}(parquetFilename, table)
 		// 打印writeParquet耗时
-		fmt.Printf("turbine: %swriteParquet耗时：%v\n", data.TurbineID, time.Since(start2))
+
 		if err != nil {
 			log.Printf("Failed to write Parquet file: %v", err)
 		}
-		//err = pool.Submit(func() {
-		//})
 		// 清空该风机的数据
 		wtData.Store(data.TurbineID, make([]*pb.WindTurbineData, 0))
 		return &pb.WriteResponse{Message: "Data received"}, nil
@@ -229,7 +241,7 @@ func main() {
 	// 启动 Prometheus 监控 HTTP 服务器
 	go startMetricsServer()
 
-	pool, _ = ants.NewPool(1)
+	pool, _ = ants.NewPool(10)
 	listener, err := net.Listen("tcp", ":50051")
 	if err != nil {
 		log.Fatalf("Failed to listen on port 50051: %v", err)
