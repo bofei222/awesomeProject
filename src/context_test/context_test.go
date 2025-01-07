@@ -29,5 +29,5 @@ func TestTimeout(t *testing.T) {
 	}(cancelCtx)
 	wg.Wait()
 	cancelFunc()
-	t.Log("goroutine main")
+	t.Log("goroutine cgo")
 }
