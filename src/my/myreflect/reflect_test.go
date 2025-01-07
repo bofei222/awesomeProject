@@ -38,7 +38,7 @@ func TestA(t *testing.T) {
 	fmt.Printf("%v\n", elem) //{1 root}
 
 	elemType := elem.Type()
-	fmt.Printf("%v\n", elemType) //main.User
+	fmt.Printf("%v\n", elemType) //cgo.User
 
 	numField := elem.NumField()
 	fmt.Printf("%v\n", numField) //2

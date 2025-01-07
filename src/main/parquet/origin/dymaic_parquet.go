@@ -13,7 +13,7 @@ package origin
 //	Bools     []bool
 //}
 //
-//func main() {
+//func cgo() {
 //	// 浮点数和布尔值字段的映射
 //	floatFieldMap := map[int]string{
 //		0: "MC0001", 1: "MC0002", //... 继续添加更多映射

@@ -144,12 +144,12 @@ func file_hello_proto_rawDescGZIP() []byte {
 
 var file_hello_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_hello_proto_goTypes = []interface{}{
-	(*HelloRequest)(nil), // 0: main.HelloRequest
-	(*HelloReply)(nil),   // 1: main.HelloReply
+	(*HelloRequest)(nil), // 0: cgo.HelloRequest
+	(*HelloReply)(nil),   // 1: cgo.HelloReply
 }
 var file_hello_proto_depIdxs = []int32{
-	0, // 0: main.Greeter.SayHello:input_type -> main.HelloRequest
-	1, // 1: main.Greeter.SayHello:output_type -> main.HelloReply
+	0, // 0: cgo.Greeter.SayHello:input_type -> cgo.HelloRequest
+	1, // 1: cgo.Greeter.SayHello:output_type -> cgo.HelloReply
 	1, // [1:2] is the sub-list for method output_type
 	0, // [0:1] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
